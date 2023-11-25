@@ -15,5 +15,5 @@ jobs:
       - name: Send post
         run: node index.js
         env:
-          BSKY_HANDLE: ${{ secrets.BSKY_HANDLE }}
-          BSKY_PASSWORD: ${{ secrets.BSKY_PASSWORD }}
+          IDENTIFIER: ${{ secrets.IDENTIFER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
