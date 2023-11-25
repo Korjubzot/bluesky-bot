@@ -2,7 +2,6 @@ require("dotenv").config();
 const fs = require("fs");
 const path = require("path");
 const { BskyAgent } = require("@atproto/api");
-const { send } = require("process");
 
 async function sendPostWithImage(imagePath, text) {
   if (!fs.existsSync(imagePath)) {
@@ -39,7 +38,7 @@ async function sendPostWithImage(imagePath, text) {
   });
 }
 
-sendPostWithImage("./img/1303084653119.jpg", "Tester text")
+sendPostWithImage("./img/1303180676400.jpg", "Mr E. Test")
   .then(() => {
     console.log("Post sent!");
   })
