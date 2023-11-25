@@ -42,7 +42,44 @@ async function sendPostWithImage(imagePath) {
   return { postResult, fileName };
 }
 
-sendPostWithImage("./img/1303180676400.jpg")
+function getRandomImagePath() {
+  const dir = "./img";
+  const files = fs.readdirSync(dir);
+
+  if (files.length === 0) {
+    throw new Error("No files in img directory");
+  }
+
+  let usedImages;
+  try {
+    usedImages = new Set(
+      JSON.parse(fs.readFileSync("usedImages.json", "utf-8"))
+    );
+  } catch {
+    usedImages = new Set();
+  }
+
+  let unusedImages = files.filter((file) => !usedImages.has(file));
+
+  if (unusedImages.length === 0) {
+    usedImages.clear();
+    fs.writeFileSync("usedImages.json", JSON.stringify(Array.from(usedImages)));
+    console.log("File limit reached. Resetting usedImages.json...");
+    unusedImages = files;
+  }
+
+  const randomIndex = Math.floor(Math.random() * unusedImages.length);
+  const randomFile = unusedImages[randomIndex];
+
+  usedImages.add(randomFile);
+  fs.writeFileSync("usedImages.json", JSON.stringify(Array.from(usedImages)));
+
+  return path.join(dir, randomFile);
+}
+
+const imagePath = getRandomImagePath();
+
+sendPostWithImage(imagePath)
   .then(({ fileName }) => {
     console.log(`Post sent with image: ${fileName}!`);
   })
