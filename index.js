@@ -3,10 +3,12 @@ const fs = require("fs");
 const path = require("path");
 const { BskyAgent } = require("@atproto/api");
 
-async function sendPostWithImage(imagePath, text) {
+async function sendPostWithImage(imagePath) {
   if (!fs.existsSync(imagePath)) {
     throw new Error("File does not exist! Try again.");
   }
+
+  const fileName = path.basename(imagePath);
 
   const fileExtension = path.extname(imagePath).toLowerCase();
   if (fileExtension !== ".jpg" && fileExtension !== ".png") {
@@ -24,8 +26,8 @@ async function sendPostWithImage(imagePath, text) {
 
   const testUpload = await agent.uploadBlob(imageBytes, { encoding });
 
-  return await agent.post({
-    text: text,
+  const postResult = await agent.post({
+    text: fileName,
     embed: {
       images: [
         {
@@ -36,11 +38,13 @@ async function sendPostWithImage(imagePath, text) {
       $type: "app.bsky.embed.images",
     },
   });
+
+  return { postResult, fileName };
 }
 
-sendPostWithImage("./img/1303180676400.jpg", "Mr E. Test")
-  .then(() => {
-    console.log("Post sent!");
+sendPostWithImage("./img/1303180676400.jpg")
+  .then(({ fileName }) => {
+    console.log(`Post sent with image: ${fileName}!`);
   })
   .catch((error) => {
     console.log("Post failed:", error.message);
