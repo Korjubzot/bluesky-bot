@@ -3,6 +3,17 @@ const fs = require("fs");
 const path = require("path");
 const { BskyAgent } = require("@atproto/api");
 
+async function sendPostWithText(text) {
+  const agent = new BskyAgent({ service: "https://bsky.social" });
+
+  await agent.login({
+    identifier: process.env.IDENTIFIER,
+    password: process.env.PASSWORD,
+  });
+
+  await agent.post({ text });
+}
+
 async function sendPostWithImage(imagePath) {
   if (!fs.existsSync(imagePath)) {
     throw new Error("File does not exist! Try again.");
@@ -44,9 +55,15 @@ async function sendPostWithImage(imagePath) {
 
 function getRandomImagePath() {
   const dir = "./img";
-  const files = fs.readdirSync(dir);
+  let files = fs.readdirSync(dir);
+
+  files = files.filter((file) => {
+    const extension = path.extname(file).toLowerCase();
+    return [".jpg", ".gif", ".png"].includes(extension);
+  });
 
   if (files.length === 0) {
+    postError("Error: no files in img directory.");
     throw new Error("No files in img directory");
   }
 
@@ -84,5 +101,6 @@ sendPostWithImage(imagePath)
     console.log(`Post sent with image: ${fileName}!`);
   })
   .catch((error) => {
+    postError("Post failed. Am I feeling alright?");
     console.log("Post failed:", error.message);
   });
