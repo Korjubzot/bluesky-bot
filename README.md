@@ -51,13 +51,31 @@ The easiest way to use automate this code is to use GitHub Actions.
 2. Go to repo settings.
 3. Navigate to Security > Secrets and variables > Actions.
 4. Add two new Repository Secrets - one for your handle, and one for your password. They'll be the same as your ```IDENTIFIER``` and ```PASSWORD``` credentials above. Make sure to name them as IDENTIFIER and PASSWORD.
-5. Inside the ```.github/workflows``` directory is a file called ```post.yml``` that GitHub Actions uses to run this script. You can modify the cron here to adjust timing.
+5. Inside the ```.github/workflows``` directory is a file called ```post.yml``` that GitHub Actions uses to run this script. Copy and paste the following into it.
 ```
+name: "Post to Bluesky"
+
 on:
   schedule: 
     - cron: "30 5,17 * * *"
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".nvmrc"
+      - run: npm ci
+      - name: Send post
+        run: node index.js
+        env:
+          IDENTIFIER: ${{ secrets.IDENTIFIER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
 ```
-This is the default setting - twice a day, at 17:30pm and 5:30am. You can use [crontab](https://crontab.guru/) to change the timing.
+This is the default setting - twice a day, at 17:30pm and 5:30am. You can use [crontab](https://crontab.guru/) to change the timing. It uses the latest version of Ubuntu to run Node.js (the version of Node is specified in ```.nvmrc```).
 
 ```
 0 22 * * 1-5
