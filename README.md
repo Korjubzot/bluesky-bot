@@ -30,7 +30,7 @@ npm install
 IDENTIFIER=your_identifier
 PASSWORD=your_password
 ```
-Identifier should be your Bluesky username, without the @ symbol attached (i.e. billywalker.bsky.social). Your password _can_ be your account password, but Bluesky recommends using App Passwords for security. You can generate one under Settings > Advanced > App Passwords.
+Identifier should be your Bluesky username, without the @ symbol attached (i.e. willwalker.bsky.social). Your password _can_ be your account password, but Bluesky recommends using App Passwords for security. You can generate one under Settings > Advanced > App Passwords.
 
 5. Add images to the ```/img``` directory.
 
@@ -40,16 +40,18 @@ Bluesky currently supports just .png and .jpg file formats, and this bot require
 
 Run ```node index.js``` to run this script a single time. 
 
-The way this code works is that it first logs in to Bluesky using your credentials, then selects a random image from the ```/img``` folder. If that images filename doesn't exist in ```usedImages.json```, it's valid to post - otherwise, it looks for a new image. 
-Posting to Bluesky requires uploading the image as a Blob(```agent.uploadBlob```) then pairing that blob with a regular post request (```agent.post```). The script sends that post with our filename as the main text. Bluesky logins only last a few minutes before automatically logging out, so there's no need for a logout function.
+The way this bots works is that it first logs in to Bluesky using your credentials, then selects a random image from the ```/img``` folder. If that images filename doesn't exist in ```usedImages.json```, it's valid to post - otherwise, it looks for a new image. 
+Posting to Bluesky requires uploading the image as a Blob(```agent.uploadBlob```) then pairing that blob with a regular post request (```agent.post```). The script sends that post with our filename as the main text. Bluesky logins through their API only last a few minutes before automatically logging out, so there's no need for a logout function.
+
+When the maximum number of images is reached (i.e. usedImages has the filenames of every image in the folder), the bot will quietly reset the folder and continue on as normal.
 
 ### Automating
 
-The easiest way to use automate this code is to use GitHub Actions.
+The easiest way to use this bot for yourself is with GitHub Actions.
 
 1. Fork the repository to your own GitHub.
 2. Go to repo settings.
-3. Navigate to Security > Secrets and variables > Actions.
+3. Navigate to Security > Secrets and Variables > Actions.
 4. Add two new Repository Secrets - one for your handle, and one for your password. They'll be the same as your ```IDENTIFIER``` and ```PASSWORD``` credentials above. Make sure to name them as IDENTIFIER and PASSWORD.
 5. Inside the ```.github/workflows``` directory is a file called ```post.yml``` that GitHub Actions uses to run this script. Copy and paste the following into it.
 ```
